@@ -22,8 +22,13 @@ def hmac(hmac_key, hmac_secret, server='https://localbitcoins.net'):
     conn = Connection()
     conn._set_hmac(server, hmac_key, hmac_secret)
     return conn
-
-
+index = 0
+def Counter(__Proxy):
+    global index
+    if index + 1 == len(proxy):
+        index = -1
+    index += 1
+    return index
 class Connection():
 
     def __init__(self):
@@ -76,7 +81,7 @@ class Connection():
             }
 
             if method == 'GET':
-                return requests.get(self.server + url, params=params, headers=headers, stream=stream)
+                return requests.get(self.server + url, params=params, headers=headers, stream=stream, proxy=__Proxy[Counter(__Proxy)])
             else:
                 return requests.post(self.server + url, data=params, headers=headers, stream=stream, files=files)
 
