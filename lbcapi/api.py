@@ -23,6 +23,13 @@ def hmac(hmac_key, hmac_secret, server='https://localbitcoins.net'):
     conn._set_hmac(server, hmac_key, hmac_secret)
     return conn
 index = 0
+__Proxy = [
+    '3zwuU3dhUX:HOpKihu6DM@81.16.143.244:32806',
+    '3zwuU3dhUX:HOpKihu6DM@81.16.143.245:32806',
+    '3zwuU3dhUX:HOpKihu6DM@81.16.143.249:32806',
+    '3zwuU3dhUX:HOpKihu6DM@81.16.143.253:32806',
+    '3zwuU3dhUX:HOpKihu6DM@81.16.143.254:32806'
+]
 def Counter(__Proxy):
     global index
     if index + 1 == len(proxy):
@@ -71,7 +78,7 @@ class Connection():
                     'client_id': self.client_id,
                     'client_secret': self.client_secret,
                 }
-                r = requests.post(self.server + '/oauth2/access_token/', data=refresh_params)
+                r = requests.post(self.server + '/oauth2/access_token/', data=refresh_params, proxy=__Proxy[Counter(__Proxy)])
                 self.access_token = r.json()['access_token']
                 self.refresh_token = r.json()['refresh_token']
                 self.expires_at = datetime.datetime.utcnow() + datetime.timedelta(seconds=int(r.json()['expires_in']))
@@ -83,7 +90,7 @@ class Connection():
             if method == 'GET':
                 return requests.get(self.server + url, params=params, headers=headers, stream=stream, proxy=__Proxy[Counter(__Proxy)])
             else:
-                return requests.post(self.server + url, data=params, headers=headers, stream=stream, files=files)
+                return requests.post(self.server + url, data=params, headers=headers, stream=stream, files=files, proxy=__Proxy[Counter(__Proxy)])
 
         # If HMAC
         elif self.hmac_key:
@@ -95,12 +102,12 @@ class Connection():
 
                 # Prepare request based on method.
                 if method == 'POST':
-                    api_request = requests.Request('POST', self.server + url, data=params, files=files).prepare()
+                    api_request = requests.Request('POST', self.server + url, data=params, files=files, proxy=__Proxy[Counter(__Proxy)]).prepare()
                     params_encoded = api_request.body
 
                 # GET method
                 else:
-                    api_request = requests.Request('GET', self.server + url, params=params).prepare()
+                    api_request = requests.Request('GET', self.server + url, params=params, proxy=__Proxy[Counter(__Proxy)]).prepare()
                     params_encoded = urlparse(api_request.url).query
 
                 # Calculate signature
