@@ -54,7 +54,7 @@ class Connection():
             url = url[len(self.server):]
 
         # If OAuth2
-        if self.access_token:,
+        if self.access_token:
 
             # If token is expiring tomorrow, then try to refresh it
             if self.refresh_token and self.client_id and self.client_secret and (not self.expires_at or self.expires_at < datetime.datetime.utcnow() + datetime.timedelta(days=1)):
