@@ -22,20 +22,6 @@ def hmac(hmac_key, hmac_secret, server='https://localbitcoins.net'):
     conn = Connection()
     conn._set_hmac(server, hmac_key, hmac_secret)
     return conn
-index = 0
-__Proxy = [
-    '3zwuU3dhUX:HOpKihu6DM@81.16.143.244:32806',
-    '3zwuU3dhUX:HOpKihu6DM@81.16.143.245:32806',
-    '3zwuU3dhUX:HOpKihu6DM@81.16.143.249:32806',
-    '3zwuU3dhUX:HOpKihu6DM@81.16.143.253:32806',
-    '3zwuU3dhUX:HOpKihu6DM@81.16.143.254:32806'
-]
-def Counter(__Proxy):
-    global index
-    if index + 1 == len(proxy):
-        index = -1
-    index += 1
-    return index
 class Connection():
 
     def __init__(self):
@@ -52,7 +38,7 @@ class Connection():
         self.hmac_key = None
         self.hmac_secret = None
 
-    def call(self, method, url, params=None, stream=False, files=None):
+    def call(self, method, url, params=None, stream=False, files=None, proxy):
         method = method.upper()
         if method not in ['GET', 'POST']:
             raise Exception(u'Invalid method {}!'.format(method))
@@ -68,7 +54,7 @@ class Connection():
             url = url[len(self.server):]
 
         # If OAuth2
-        if self.access_token:
+        if self.access_token:,
 
             # If token is expiring tomorrow, then try to refresh it
             if self.refresh_token and self.client_id and self.client_secret and (not self.expires_at or self.expires_at < datetime.datetime.utcnow() + datetime.timedelta(days=1)):
@@ -78,7 +64,7 @@ class Connection():
                     'client_id': self.client_id,
                     'client_secret': self.client_secret,
                 }
-                r = requests.post(self.server + '/oauth2/access_token/', data=refresh_params, proxy=__Proxy[Counter(__Proxy)])
+                r = requests.post(self.server + '/oauth2/access_token/', data=refresh_params,proxy=proxy)
                 self.access_token = r.json()['access_token']
                 self.refresh_token = r.json()['refresh_token']
                 self.expires_at = datetime.datetime.utcnow() + datetime.timedelta(seconds=int(r.json()['expires_in']))
@@ -88,9 +74,9 @@ class Connection():
             }
 
             if method == 'GET':
-                return requests.get(self.server + url, params=params, headers=headers, stream=stream, proxy=__Proxy[Counter(__Proxy)])
+                return requests.get(self.server + url, params=params, headers=headers, stream=stream,proxy=proxy)
             else:
-                return requests.post(self.server + url, data=params, headers=headers, stream=stream, files=files, proxy=__Proxy[Counter(__Proxy)])
+                return requests.post(self.server + url, data=params, headers=headers, stream=stream, files=files,proxy=proxy)
 
         # If HMAC
         elif self.hmac_key:
@@ -102,12 +88,12 @@ class Connection():
 
                 # Prepare request based on method.
                 if method == 'POST':
-                    api_request = requests.Request('POST', self.server + url, data=params, files=files, proxy=__Proxy[Counter(__Proxy)]).prepare()
+                    api_request = requests.Request('POST', self.server + url, data=params, files=files, proxy=proxy).prepare()
                     params_encoded = api_request.body
 
                 # GET method
                 else:
-                    api_request = requests.Request('GET', self.server + url, params=params, proxy=__Proxy[Counter(__Proxy)]).prepare()
+                    api_request = requests.Request('GET', self.server + url, params=params,proxy=proxy).prepare()
                     params_encoded = urlparse(api_request.url).query
 
                 # Calculate signature
