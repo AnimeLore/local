@@ -33,7 +33,7 @@ class Connection():
         self.access_token = None
         self.refresh_token = None
         self.expires_at = None
-        self.proxy = None
+    
         # HMAC stuff
         self.hmac_key = None
         self.hmac_secret = None
@@ -74,9 +74,9 @@ class Connection():
             }
 
             if method == 'GET':
-                return requests.get(self.server + url, params=params, headers=headers, stream=stream,proxy=proxy)
+                return requests.get(self.server + url, params=params, headers=headers, stream=stream,proxies={"https": "https://" +proxy})
             else:
-                return requests.post(self.server + url, data=params, headers=headers, stream=stream, files=files,proxy=proxy)
+                return requests.post(self.server + url, data=params, headers=headers, stream=stream, files=files,proxies={"https": "https://" +proxy})
 
         # If HMAC
         elif self.hmac_key:
@@ -88,12 +88,12 @@ class Connection():
 
                 # Prepare request based on method.
                 if method == 'POST':
-                    api_request = requests.post( self.server + url, data=params, files=files, proxy=proxy).prepare()
+                    api_request = requests.Request('POST', self.server + url, data=params, files=files, proxies={"https": "https://" +proxy}).prepare()
                     params_encoded = api_request.body
 
                 # GET method
                 else:
-                    api_request = requests.get( self.server + url, params=params,proxy=proxy).prepare()
+                    api_request = requests.Request('GET', self.server + url, params=params,proxies={"https": "https://" +proxy}).prepare()
                     params_encoded = urlparse(api_request.url).query
 
                 # Calculate signature
