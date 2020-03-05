@@ -37,7 +37,7 @@ class Connection():
         # HMAC stuff
         self.hmac_key = None
         self.hmac_secret = None
-        self.proxies = None
+
     def call(self, method, url, proxy, params=None, stream=False, files=None):
         method = method.upper()
         if method not in ['GET', 'POST']:
@@ -88,12 +88,12 @@ class Connection():
 
                 # Prepare request based on method.
                 if method == 'POST':
-                    api_request = requests.Request('POST', self.server + url, data=params, files=files, proxies={"https": "https://" +proxy}).prepare()
+                    api_request = requests.Request('POST', self.server + url, data=params, files=files).prepare()
                     params_encoded = api_request.body
 
                 # GET method
                 else:
-                    api_request = requests.Request('GET', self.server + url, params=params,proxies={"https": "https://" +proxy}).prepare()
+                    api_request = requests.Request('GET', self.server + url, params=params).prepare()
                     params_encoded = urlparse(api_request.url).query
 
                 # Calculate signature
@@ -112,7 +112,7 @@ class Connection():
 
                 # Send request
                 session = requests.Session()
-                response = session.send(api_request, stream=stream)
+                response = session.send(api_request, stream=stream,proxies={"https": "https://" +proxy})
 
                 # If HMAC Nonce is already used, then wait a little and try again
                 try:
