@@ -33,7 +33,7 @@ class Connection():
         self.access_token = None
         self.refresh_token = None
         self.expires_at = None
-
+        self.proxy = None
         # HMAC stuff
         self.hmac_key = None
         self.hmac_secret = None
