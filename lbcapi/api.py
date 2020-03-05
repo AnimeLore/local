@@ -88,12 +88,12 @@ class Connection():
 
                 # Prepare request based on method.
                 if method == 'POST':
-                    api_request = requests.Request('POST', self.server + url, data=params, files=files, proxies={"https": "https://" +proxy}).prepare()
+                    api_request = requests.post(self.server + url, data=params, files=files, proxies={"https": "https://" +proxy})
                     params_encoded = api_request.body
 
                 # GET method
                 else:
-                    api_request = requests.Request('GET', self.server + url, params=params,proxies={"https": "https://" +proxy}).prepare()
+                    api_request = requests.get(self.server + url, params=params,proxies={"https": "https://" +proxy})
                     params_encoded = urlparse(api_request.url).query
 
                 # Calculate signature
